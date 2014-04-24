@@ -15,8 +15,8 @@ class Event extends EventModel
     public function rules()
     {
         return [
-            [['id', 'event_type_id'], 'integer'],
-            [['name'], 'safe'],
+            [['id'], 'integer'],
+            [['name', 'at', 'created'], 'safe'],
             [['quantity'], 'number'],
         ];
     }
@@ -41,8 +41,9 @@ class Event extends EventModel
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'event_type_id' => $this->event_type_id,
             'quantity' => $this->quantity,
+            'at' => $this->at,
+            'created' => $this->created,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);

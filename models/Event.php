@@ -8,11 +8,10 @@ use Yii;
  * This is the model class for table "event".
  *
  * @property string $id
- * @property string $event_type_id
  * @property string $name
  * @property string $quantity
- *
- * @property EventType $eventType
+ * @property string $at
+ * @property string $created
  */
 class Event extends \yii\db\ActiveRecord
 {
@@ -30,9 +29,9 @@ class Event extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['event_type_id', 'name', 'quantity'], 'required'],
-            [['event_type_id'], 'integer'],
+            [['name', 'quantity', 'at'], 'required'],
             [['quantity'], 'number'],
+            [['at', 'created'], 'safe'],
             [['name'], 'string', 'max' => 50]
         ];
     }
@@ -44,26 +43,35 @@ class Event extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID and primary key',
-            'event_type_id' => 'Corresponding event type',
             'name' => 'Name of this event',
             'quantity' => 'Quantity given',
+            'at' => 'Time of event',
+            'created' => 'When event was created',
         ];
     }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEventType()
+    
+    public function beforeSave($insert)
     {
-        return $this->hasOne(EventType::className(), ['id' => 'event_type_id']);
+        if (parent::beforeSave($insert)) {
+            $this->at=date('Y-m-d G:i:s', strtotime($this->at));
+            return true;
+        } else {
+            return false;
+        }
     }
     
-    /**
-     * http://www.yiiframework.com/forum/index.php/topic/49479-gridview-with-foreign-key/
-     * @return type
-     */
-    public function getEventTypeName()
+    public function afterSave($insert)
     {
-        return $this->eventType->name;
+        $a=1;
+        if ($insert) {
+            $at_time = date('G:i Y-m-d', strtotime($this->at));
+            $testname = '/tmp/testfile_' . $this->id;
+            exec("touch {$testname} | at {$at_time}", $output);
+            $a=1;
+            
+            return true;
+        } else {
+            return false;
+        }
     }
 }

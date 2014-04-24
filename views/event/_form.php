@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\widgets\DateTimePicker;
 
 /**
  * @var yii\web\View $this
@@ -14,15 +15,24 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <!-- <?= $form->field($model, 'event_type_id')->textInput(['maxlength' => 10]) ?> !-->
-    
-    <?php $list = Html::activeDropDownList($model, 'event_type_id', \yii\helpers\ArrayHelper::map(app\models\EventType::find()->all(), 'id', 'name')) ?>
-
-    <?= $form->field($model, 'event_type_id')->dropDownList(\yii\helpers\ArrayHelper::map(app\models\EventType::find()->all(), 'id', 'name'))  ?>
-    
     <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
 
     <?= $form->field($model, 'quantity')->textInput(['maxlength' => 4]) ?>
+
+    <!-- <?= $form->field($model, 'at')->textInput() ?> -->
+    
+    <?= $form->field($model, 'at')->widget(DateTimePicker::className(),
+    [
+        'name' => 'dp_1',
+        'type' => DateTimePicker::TYPE_INPUT,
+        'value' => '23-Feb-1982 10:10',
+        'pluginOptions' => [
+            'autoclose'=>true,
+            'format' => 'dd-M-yyyy hh:ii'
+        ]
+    ]); ?>
+
+    <!-- <?= $form->field($model, 'created')->textInput() ?> -->
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
@@ -31,4 +41,3 @@ use yii\widgets\ActiveForm;
     <?php ActiveForm::end(); ?>
 
 </div>
-   

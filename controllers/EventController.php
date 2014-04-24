@@ -8,7 +8,6 @@ use app\models\search\Event as EventSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
  * EventController implements the CRUD actions for Event model.
@@ -18,27 +17,6 @@ class EventController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => [],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                               [
-                        'actions' => [],
-                        'allow' => false,
-                        'roles' => ['?'],
-                    ],
-                    
-                    [
-                        'allow' => true,
-                        'actions' => ['login', 'signup', 'register'],
-                        'roles' => ['?'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
