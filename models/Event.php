@@ -66,7 +66,10 @@ class Event extends \yii\db\ActiveRecord
         if ($insert) {
             $at_time = date('G:i Y-m-d', strtotime($this->at));
             $testname = '/tmp/testfile_' . $this->id;
+            $feedme = Yii::getAlias('@webroot') . '/../shell/feedme.sh ';
+            $cmd = $feedme . '-q ' . $this->quantity;
             exec("touch {$testname} | at {$at_time}", $output);
+            exec("{$cmd} | at {$at_time}", $output);
             $a=1;
             
             return true;
