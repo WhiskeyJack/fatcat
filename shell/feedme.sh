@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Parameters
 
@@ -10,13 +10,18 @@ TTYFOUND=false
 WALLFOUND=true
 NOTIFYFOUND=true
 DATE=`date`
+DIR=$( cd "$( dirname "$0" )" && pwd )
+LOGFILE="$DIR/log/feedme.log"
 
 QUANTITY=0
 SILENT=false
 EVENTID=0
+EVENTNAME=""
 REPORTDB=false
 NOACT=false
 DEBUG=false
+USELOG=true
+
 
 usage(){
 	echo "$PROGRAM_NAME v$VERSION ($CHANGEDATE)"
@@ -25,6 +30,8 @@ usage(){
 	echo "   -q  --quantity    quantity to feed (required)"
 	echo "   -s  --silent      no output/broadcast to consoles"
 	echo "   -e  --eventid     related eventid"
+	echo "   -N  --eventname   related event name"
+        echo "   -d  --debug       show debug output"
         echo "   -r  --reportdb    report result to db (requires eventid)"
         echo "   -n  --no-act      do not actually perform any action"
         echo "   -h  --help        this help message"
@@ -37,6 +44,7 @@ debug_param() {
         echo "  quantity:   $QUANTITY"
         echo "  silent:     $SILENT"
         echo "  eventid:    $EVENTID"
+        echo "  eventname:  $EVENTNAME"
         echo "  reportdb:   $REPORTDB"
         echo "  no-act:     $NOACT"
         echo "  debug:      $DEBUG"
@@ -61,7 +69,7 @@ debug_param() {
 #-debug
 # http://stackoverflow.com/questions/2642707/shell-script-argument-parsing?answertab=votes#tab-top
 # TEMP=$(getopt -n $PROGRAM_NAME -o p:P:cCkhnvVS --long domain-password:,pop3-password:,create,cron,kill,help,no-sync-passwords,version,verbose,skip-pop3 -- "$@")
-TEMP=$(getopt -n $PROGRAM_NAME -o q:sernhd --long quantity:,silent,eventid,reportdb,no-act,help,debug -- "$@") 
+TEMP=$(getopt -n $PROGRAM_NAME -o q:se:N:rnhd --long quantity:,silent,eventid:,name:reportdb,no-act,help,debug -- "$@") 
 
 # check if we have at least one argument
 if [ "$#" -lt 1 ]; then 
@@ -81,6 +89,9 @@ while true; do
                 ;;                                    
                 -e|--eventid)                            
                         EVENTID="$2"; shift; shift; continue  
+                ;;                                    
+                -N|--name)                            
+                        EVENTNAME="$2"; shift; shift; continue  
                 ;;                                    
                 -h|--help)                            
                         usage                         
@@ -135,7 +146,7 @@ fi
 
 
 ## Perform feed action
-MSG="Feeding quantity $QUANTITY at $DATE"
+MSG="Feeding $EVENTNAME with quantity $QUANTITY at $DATE"
 if [ "$TTYFOUND" = true ]; then
 	echo $MSG
 fi
@@ -145,4 +156,7 @@ if [ "$WALLFOUND" = true ]; then
 fi
 if [ "$NOTIFYFOUND" = true ]; then
 	notify-send -t 1000 "$PROGRAM_NAME" "$MSG"
+fi
+if [ "$USELOG" = true ]; then
+	 echo "$MSG, eventid=$EVENTID" >> $LOGFILE 
 fi

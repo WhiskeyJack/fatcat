@@ -1,11 +1,10 @@
-
 -- phpMyAdmin SQL Dump
 -- version 4.0.10deb1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 24, 2014 at 12:36 AM
--- Server version: 5.5.35-1ubuntu1
+-- Generation Time: Apr 29, 2014 at 12:31 AM
+-- Server version: 5.5.37-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -40,12 +39,28 @@ CREATE TABLE IF NOT EXISTS `account` (
 
 CREATE TABLE IF NOT EXISTS `event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID and primary key',
-  `event_type_id` int(10) unsigned NOT NULL COMMENT 'Corresponding event type',
   `name` varchar(50) NOT NULL COMMENT 'Name of this event',
   `quantity` decimal(4,2) unsigned NOT NULL COMMENT 'Quantity given',
+  `at` datetime NOT NULL COMMENT 'Time of event',
+  `event_status_id` int(10) unsigned NOT NULL DEFAULT '1',
+  `at_job` int(10) unsigned DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'When event was created',
   PRIMARY KEY (`id`),
-  KEY `event_type_id` (`event_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains the defined events' AUTO_INCREMENT=4 ;
+  KEY `event_status_id` (`event_status_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains the defined events' AUTO_INCREMENT=15 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_status`
+--
+
+CREATE TABLE IF NOT EXISTS `event_status` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -162,7 +177,7 @@ ALTER TABLE `account`
 -- Constraints for table `event`
 --
 ALTER TABLE `event`
-  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`event_type_id`) REFERENCES `event_type` (`id`);
+  ADD CONSTRAINT `event_event_status_id` FOREIGN KEY (`event_status_id`) REFERENCES `event_status` (`id`);
 
 --
 -- Constraints for table `periodic_event`
@@ -175,3 +190,10 @@ ALTER TABLE `periodic_event`
 --
 ALTER TABLE `profile`
   ADD CONSTRAINT `fk_user_profile` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+INSERT INTO `event_status` (`id`, `name`) VALUES
+(5, 'failed'),
+(4, 'finished'),
+(1, 'registered'),
+(3, 'running'),
+(2, 'scheduled');
