@@ -43,6 +43,14 @@ debug_param() {
 	echo "  wall found: $WALLFOUND"
 }
 
+
+#check if at command is present
+#command -v at >/dev/null 2>&1 || { 
+#	echo " Program \"at\" not found. Cannot continue."
+#	exit 0 
+#}
+
+
 # Parse arguments
 #-quantity
 #-silent
