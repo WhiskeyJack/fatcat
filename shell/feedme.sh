@@ -13,6 +13,10 @@ DATE=`date`
 DIR=$( cd "$( dirname "$0" )" && pwd )
 LOGFILE="$DIR/log/feedme.log"
 
+DBNAME=catfeeder
+DBUSER=cat
+DBPASS=miauw
+
 QUANTITY=0
 SILENT=false
 EVENTID=0
@@ -159,4 +163,10 @@ if [ "$NOTIFYFOUND" = true ]; then
 fi
 if [ "$USELOG" = true ]; then
 	 echo "$MSG, eventid=$EVENTID" >> $LOGFILE 
+fi
+if [ "$EVENTID" -gt 0 ]; then
+	SQL='UPDATE `catfeeder`.`event` SET `event_status_id` = '4' WHERE `event`.`id`='
+    	SQL+="$EVENTID;"
+	echo "Running SQL: $SQL" >> $LOGFILE	
+	mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
 fi

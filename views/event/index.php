@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'quantity',
             'at',
+            'eventStatus.name',
             'created',
 
             ['class' => 'yii\grid\ActionColumn'],

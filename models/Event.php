@@ -64,7 +64,7 @@ class Event extends \yii\db\ActiveRecord
         return $this->hasOne(EventStatus::className(), ['id' => 'event_status_id']);
     }
 
-        public function beforeSave($insert)
+    public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
             $this->at=date('Y-m-d G:i:s', strtotime($this->at));
@@ -76,7 +76,6 @@ class Event extends \yii\db\ActiveRecord
     
     public function afterSave($insert)
     {
-        $a=1;
         if ($insert) {
             $at_time = date('G:i Y-m-d', strtotime($this->at));
             $feedme = Yii::getAlias('@webroot') . '/../shell/feedme.sh ';
@@ -87,7 +86,8 @@ class Event extends \yii\db\ActiveRecord
                 if (preg_match("/^job (\d*) /", $input_line, $matches)) {
                     $this->at_job = $matches[1];
                     $this->event_status_id = 2;
-                    $this->update();
+                    $update = array('at_job' => $this->at_job, 'event_status_id' => $this->event_status_id);
+                    \Yii::$app->db->createCommand()->update(self::tableName(), $update, ['id'=>$this->id])->execute();
                 }
             }
             return true;
