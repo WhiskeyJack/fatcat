@@ -1,3 +1,13 @@
+Catfeeder Install
+
+- make sure at is installed
+- remove www-data from /etc/at.deny
+
+
+
+
+
+
 Installing giix 
 ===============
 

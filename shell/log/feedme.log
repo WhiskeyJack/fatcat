@@ -45,3 +45,5 @@ Feeding  with quantity 1 at wo apr 30 00:04:24 CEST 2014, eventid=21
 Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=21;
 Feeding test_123 with quantity 321 at Wed Apr 30 00:07:00 CEST 2014, eventid=22
 Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=22;
+Feeding test 2 with quantity 123 at Wed Apr 30 09:22:00 CEST 2014, eventid=16
+Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=16;
