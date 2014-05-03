@@ -32,6 +32,15 @@ AppAsset::register($this);
                     'class' => 'navbar-inverse navbar-fixed-top',
                 ],
             ]);
+                        echo Nav::widget([
+                'options' => ['class' => 'navbar-nav navbar-left    '],
+                'items' => [
+//                    ['label' => 'Home', 'url' => ['/site/index']],
+//                    ['label' => 'About', 'url' => ['/site/about']],
+//                    ['label' => 'Contact', 'url' => ['/site/contact']],
+                    ['label' => date('l F j g:i A')],
+                     ],
+            ]);               
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [

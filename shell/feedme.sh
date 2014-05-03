@@ -13,6 +13,9 @@ DATE=`date`
 DIR=$( cd "$( dirname "$0" )" && pwd )
 LOGFILE="$DIR/log/feedme.log"
 
+FEEDCOMMANDON="echo 2=0% > /dev/servoblaster"
+FEEDCOMMANDOFF="echo 2=50% > /dev/servoblaster"
+
 DBNAME=catfeeder
 DBUSER=cat
 DBPASS=miauw
@@ -161,6 +164,21 @@ fi
 if [ "$NOTIFYFOUND" = true ]; then
 	notify-send -t 1000 "$PROGRAM_NAME" "$MSG"
 fi
+if [ "$USELOG" = true ]; then
+	 echo "$MSG, eventid=$EVENTID" >> $LOGFILE 
+fi
+if [ "$EVENTID" -gt 0 ]; then
+	SQL='UPDATE `catfeeder`.`event` SET `event_status_id` = '3' WHERE `event`.`id`='
+    	SQL+="$EVENTID;"
+	echo "Running SQL: $SQL" >> $LOGFILE	
+	mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
+fi
+## Running the command
+$FEEDCOMMANDON
+sleep $QUANTITY
+$FEEDCOMMANDOFF
+DATE=`date`
+MSG="Feeding $EVENTNAME finished at $DATE"
 if [ "$USELOG" = true ]; then
 	 echo "$MSG, eventid=$EVENTID" >> $LOGFILE 
 fi

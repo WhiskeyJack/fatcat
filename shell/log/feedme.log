@@ -47,3 +47,11 @@ Feeding test_123 with quantity 321 at Wed Apr 30 00:07:00 CEST 2014, eventid=22
 Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=22;
 Feeding test 2 with quantity 123 at Wed Apr 30 09:22:00 CEST 2014, eventid=16
 Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=16;
+Feeding testteer with quantity 5 at Sat May  3 23:44:00 CEST 2014, eventid=24
+Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 3 WHERE `event`.`id`=24;
+Feeding testteer finished at Sat May  3 23:44:05 CEST 2014, eventid=24
+Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=24;
+Feeding bal bla bla with quantity 15 at Sat May  3 23:46:00 CEST 2014, eventid=25
+Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 3 WHERE `event`.`id`=25;
+Feeding bal bla bla finished at Sat May  3 23:46:15 CEST 2014, eventid=25
+Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=25;
