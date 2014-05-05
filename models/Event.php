@@ -51,9 +51,11 @@ class Event extends \yii\db\ActiveRecord
             'name' => 'Name of this event',
             'quantity' => 'Quantity given',
             'at' => 'Time of event',
+            'at_local' => 'Time of event',
             'event_status_id' => 'Event Status ID',
             'at_job' => 'At Job',
             'created' => 'When event was created',
+            'created_local' => 'When event was created',
         ];
     }
     /**
@@ -67,7 +69,11 @@ class Event extends \yii\db\ActiveRecord
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            $this->at=date('Y-m-d G:i:s', strtotime($this->at));
+            $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+            date_default_timezone_set($timezone);
+            $at_ts = strtotime($this->at);
+            date_default_timezone_set('UTC');
+            $this->at=date('Y-m-d G:i:s', $at_ts);
             return true;
         } else {
             return false;
@@ -95,6 +101,17 @@ class Event extends \yii\db\ActiveRecord
             return false;
         }
     }
-}
-
     
+    public $at_local; 
+    public $created_local;
+    public function afterFind() {
+        $at_ts = strtotime($this->at);
+        $created_ts = strtotime($this->created);
+        $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+        Yii::$app->timeZone = $timezone;
+        
+        $this->at_local = date('l F j g:i A', $at_ts);
+        $this->created_local = date('l F j g:i A', $created_ts);
+        return parent::afterFind();
+    }
+}

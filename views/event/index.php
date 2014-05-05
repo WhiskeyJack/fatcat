@@ -31,10 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'quantity',
-            'at',
+            // 'at',
+            'at_local',
             'eventStatus.name',
-            'created',
-
+            // 'created',
+            'created_local',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

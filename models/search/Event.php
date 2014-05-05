@@ -10,10 +10,9 @@ use app\models\Event as EventModel;
 /**
  * Event represents the model behind the search form about `app\models\Event`.
  */
-class Event extends EventModel
-{
-    public function rules()
-    {
+class Event extends EventModel {
+
+    public function rules() {
         return [
             [['id'], 'integer'],
             [['name', 'at', 'created'], 'safe'],
@@ -21,18 +20,17 @@ class Event extends EventModel
         ];
     }
 
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
-    public function search($params)
-    {
+    public function search($params) {
         $query = EventModel::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['at'=>SORT_DESC]]
         ]);
 
         if (!($this->load($params) && $this->validate())) {
@@ -50,4 +48,5 @@ class Event extends EventModel
 
         return $dataProvider;
     }
+
 }

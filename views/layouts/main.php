@@ -25,6 +25,9 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
     <div class="wrap">
         <?php
+        $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+        // date_default_timezone_set($timezone);
+        Yii::$app->timeZone = $timezone;
             NavBar::begin([
                 'brandLabel' => 'FatCat 0.1',
                 'brandUrl' => Yii::$app->homeUrl,

@@ -33,11 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'quantity',
-            'at',
+            //'at',
+            'at_local',
             //'event_status_id',
             'eventStatus.name',
             'at_job',
-            'created',
+            //'created',
+            'created_local'
         ],
     ]) ?>
 

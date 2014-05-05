@@ -25,6 +25,7 @@ use yii\helpers\Url;
  * @property integer $id
  * @property string  $username
  * @property string  $email
+ * @property string  $timezone
  * @property string  $password_hash
  * @property string  $auth_key
  * @property integer $registered_from
@@ -114,6 +115,7 @@ class User extends ActiveRecord implements UserInterface
         return [
             'username' => \Yii::t('user', 'Username'),
             'email' => \Yii::t('user', 'Email'),
+            'timezone' => \Yii::t('user', 'Timezone'),
             'password' => \Yii::t('user', 'Password'),
             'created_at' => \Yii::t('user', 'Registration time'),
             'registered_from' => \Yii::t('user', 'Registered from'),
@@ -138,8 +140,8 @@ class User extends ActiveRecord implements UserInterface
         return [
             'register'        => ['username', 'email', 'password'],
             'connect'         => ['username', 'email'],
-            'create'          => ['username', 'email', 'password', 'role'],
-            'update'          => ['username', 'email', 'password', 'role'],
+            'create'          => ['username', 'email', 'timezone', 'password', 'role'],
+            'update'          => ['username', 'email', 'timezone', 'password', 'role'],
             'update_password' => ['password', 'current_password'],
             'update_email'    => ['unconfirmed_email', 'current_password']
         ];

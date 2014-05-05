@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
   `email` varchar(255) NOT NULL,
+  `timezone` varchar(200) NOT NULL DEFAULT 'Europe/Amsterdam',
   `password_hash` varchar(60) NOT NULL,
   `auth_key` varchar(32) NOT NULL,
   `confirmation_token` varchar(32) DEFAULT NULL,
@@ -161,8 +162,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `user_unique_email` (`email`),
   UNIQUE KEY `user_confirmation` (`id`,`confirmation_token`),
   UNIQUE KEY `user_recovery` (`id`,`recovery_token`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 --
 -- Constraints for dumped tables
 --
