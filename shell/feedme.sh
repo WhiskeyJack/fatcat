@@ -174,9 +174,9 @@ if [ "$EVENTID" -gt 0 ]; then
 	mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
 fi
 ## Running the command
-$FEEDCOMMANDON
+eval $FEEDCOMMANDON
 sleep $QUANTITY
-$FEEDCOMMANDOFF
+eval $FEEDCOMMANDOFF
 DATE=`date`
 MSG="Feeding $EVENTNAME finished at $DATE"
 if [ "$USELOG" = true ]; then

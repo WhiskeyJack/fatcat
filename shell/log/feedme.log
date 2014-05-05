@@ -55,3 +55,5 @@ Feeding bal bla bla with quantity 15 at Sat May  3 23:46:00 CEST 2014, eventid=2
 Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 3 WHERE `event`.`id`=25;
 Feeding bal bla bla finished at Sat May  3 23:46:15 CEST 2014, eventid=25
 Running SQL: UPDATE `catfeeder`.`event` SET `event_status_id` = 4 WHERE `event`.`id`=25;
+Feeding  with quantity 3 at ma mei  5 22:28:15 CEST 2014, eventid=0
+Feeding  finished at ma mei  5 22:28:18 CEST 2014, eventid=0
