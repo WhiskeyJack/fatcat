@@ -4,7 +4,7 @@
 
 PROGRAM_NAME=Feedme
 VERSION=0.1
-CHANGEDATE="April 27, 2014"
+CHANGEDATE="May 8, 2014"
 SCRIPTNAME=`basename $0`
 TTYFOUND=false
 WALLFOUND=true
@@ -13,8 +13,11 @@ DATE=`date`
 DIR=$( cd "$( dirname "$0" )" && pwd )
 LOGFILE="$DIR/log/feedme.log"
 
-FEEDCOMMANDON="echo 2=0% > /dev/servoblaster"
+FEEDCOMMANDFORWARD="echo 2=0% > /dev/servoblaster"
+FEEDCOMMANDREVERSE="echo 2=100% > /dev/servoblaster"
 FEEDCOMMANDOFF="echo 2=50% > /dev/servoblaster"
+REVERSE=0.5       # reverse interval in seconds 
+FORWARD=1.5       # forward interval in seconds
 
 DBNAME=catfeeder
 DBUSER=cat
@@ -173,10 +176,25 @@ if [ "$EVENTID" -gt 0 ]; then
 	echo "Running SQL: $SQL" >> $LOGFILE	
 	mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
 fi
-## Running the command
-eval $FEEDCOMMANDON
-sleep $QUANTITY
-eval $FEEDCOMMANDOFF
+
+## Running the command in a loop to enable periodic reverse
+NOW=`date +%s%N | cut -b1-13`                                                 # Now in milliseconds
+QMSEC=$(echo "$QUANTITY*1000" | bc |  awk '{printf("%d\n",$1 + 0.5)}')        # Quantity in milliseconds
+END=$((NOW+QMSEC))                                                            # End in milliseconds
+echo "Running for $QMSEC milliseconds from $NOW to $END" >> $LOGFILE
+while [ "$NOW" -lt "$END" ]
+do
+    eval $FEEDCOMMANDFORWARD
+    date +"%T.%3N"
+    echo "Forward"
+    sleep $FORWARD
+    eval $FEEDCOMMANDREVERSE
+    date +"%T.%3N"
+    echo "Reverse"
+    sleep $REVERSE
+    NOW=`date +%s%N | cut -b1-13`   # Update now
+done
+
 DATE=`date`
 MSG="Feeding $EVENTNAME finished at $DATE"
 if [ "$USELOG" = true ]; then
