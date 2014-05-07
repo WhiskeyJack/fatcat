@@ -185,15 +185,14 @@ echo "Running for $QMSEC milliseconds from $NOW to $END" >> $LOGFILE
 while [ "$NOW" -lt "$END" ]
 do
     eval $FEEDCOMMANDFORWARD
-    date +"%T.%3N"
-    echo "Forward"
+    # date +"%T.%3N"; echo "Forward"
     sleep $FORWARD
     eval $FEEDCOMMANDREVERSE
-    date +"%T.%3N"
-    echo "Reverse"
+    #date +"%T.%3N"; echo "Reverse"
     sleep $REVERSE
     NOW=`date +%s%N | cut -b1-13`   # Update now
 done
+eval $FEEDCOMMANDOFF
 
 DATE=`date`
 MSG="Feeding $EVENTNAME finished at $DATE"
