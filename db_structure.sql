@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 29, 2014 at 12:31 AM
+-- Generation Time: May 12, 2014 at 09:15 PM
 -- Server version: 5.5.37-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `event` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'When event was created',
   PRIMARY KEY (`id`),
   KEY `event_status_id` (`event_status_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains the defined events' AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains the defined events' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -62,6 +62,17 @@ CREATE TABLE IF NOT EXISTS `event_status` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
+--
+-- Dumping data for table `event_status`
+--
+
+INSERT INTO `event_status` (`id`, `name`) VALUES
+(5, 'failed'),
+(4, 'finished'),
+(1, 'registered'),
+(3, 'running'),
+(2, 'scheduled');
+
 -- --------------------------------------------------------
 
 --
@@ -75,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `event_type` (
   `quantity` int(11) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains the different feeding event types ' AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Contains the different feeding event types ' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -89,6 +100,15 @@ CREATE TABLE IF NOT EXISTS `migration` (
   PRIMARY KEY (`version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `migration`
+--
+
+INSERT INTO `migration` (`version`, `apply_time`) VALUES
+('m000000_000000_base', 1398151181),
+('m140209_132017_init', 1398151187),
+('m140403_174025_create_account_table', 1398151187);
+
 -- --------------------------------------------------------
 
 --
@@ -97,8 +117,10 @@ CREATE TABLE IF NOT EXISTS `migration` (
 
 CREATE TABLE IF NOT EXISTS `periodic_event` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID and primary key',
-  `event_type_id` int(11) unsigned NOT NULL,
-  `every_day` tinyint(1) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `quantity` decimal(4,2) NOT NULL,
+  `hour` tinyint(2) NOT NULL,
+  `minute` tinyint(2) NOT NULL,
   `monday` tinyint(1) NOT NULL,
   `tuesday` tinyint(1) NOT NULL,
   `wednesday` tinyint(1) NOT NULL,
@@ -106,12 +128,10 @@ CREATE TABLE IF NOT EXISTS `periodic_event` (
   `friday` tinyint(1) NOT NULL,
   `saturday` tinyint(1) NOT NULL,
   `sunday` tinyint(1) NOT NULL,
-  `interval_in_sec` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
+  `cron_string` varchar(50) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `event_type_id` (`event_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -130,6 +150,13 @@ CREATE TABLE IF NOT EXISTS `profile` (
   `bio` text,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `profile`
+--
+
+INSERT INTO `profile` (`user_id`, `name`, `public_email`, `gravatar_email`, `gravatar_id`, `location`, `website`, `bio`) VALUES
+(1, NULL, NULL, 'admin@inthere.nl', 'd64c2637e4d01419cc23f35e5a07b16b', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -162,7 +189,15 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `user_unique_email` (`email`),
   UNIQUE KEY `user_confirmation` (`id`,`confirmation_token`),
   UNIQUE KEY `user_recovery` (`id`,`recovery_token`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `username`, `email`, `timezone`, `password_hash`, `auth_key`, `confirmation_token`, `confirmation_sent_at`, `confirmed_at`, `unconfirmed_email`, `recovery_token`, `recovery_sent_at`, `blocked_at`, `role`, `registered_from`, `logged_in_from`, `logged_in_at`, `created_at`, `updated_at`) VALUES
+(1, 'admin', 'admin@inthere.nl', 'Europe/Amsterdam', '$2y$10$XuKbJOq.2cAHBaOZ/gnDp.rTnUfwFYtCxoqy39U9JU4zfq5nMq2VC', '00YiLYsS4QWyjiNBHzZQlA1bQwbOyCWm', 'AweAEgt64eVoiUwmq1dfmQrBV70lZ7hb', 1398287313, NULL, NULL, NULL, NULL, NULL, NULL, 2130706433, 2130706433, 1399923022, 1398287313, 1399923022);
+
 --
 -- Constraints for dumped tables
 --
@@ -180,20 +215,7 @@ ALTER TABLE `event`
   ADD CONSTRAINT `event_event_status_id` FOREIGN KEY (`event_status_id`) REFERENCES `event_status` (`id`);
 
 --
--- Constraints for table `periodic_event`
---
-ALTER TABLE `periodic_event`
-  ADD CONSTRAINT `periodic_event_event_type_id` FOREIGN KEY (`event_type_id`) REFERENCES `event_type` (`id`);
-
---
 -- Constraints for table `profile`
 --
 ALTER TABLE `profile`
   ADD CONSTRAINT `fk_user_profile` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
-
-INSERT INTO `event_status` (`id`, `name`) VALUES
-(5, 'failed'),
-(4, 'finished'),
-(1, 'registered'),
-(3, 'running'),
-(2, 'scheduled');

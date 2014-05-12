@@ -8,7 +8,7 @@ use yii\widgets\DetailView;
  * @var app\models\PeriodicEvent $model
  */
 
-$this->title = $model->id;
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Periodic Events', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -31,8 +31,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'event_type_id',
-            'every_day',
+            'name',
+            'quantity',
+            'hour',
+            'minute',
             'monday',
             'tuesday',
             'wednesday',
@@ -40,8 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'friday',
             'saturday',
             'sunday',
-            'interval_in_sec',
-            'start_date',
+            'cron_string',
             'created',
         ],
     ]) ?>

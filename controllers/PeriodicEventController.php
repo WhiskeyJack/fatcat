@@ -8,7 +8,6 @@ use app\models\search\PeriodicEvent as PeriodicEventSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
  * PeriodicEventController implements the CRUD actions for PeriodicEvent model.
@@ -18,27 +17,6 @@ class PeriodicEventController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => [],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                               [
-                        'actions' => [],
-                        'allow' => false,
-                        'roles' => ['?'],
-                    ],
-                    
-                    [
-                        'allow' => true,
-                        'actions' => ['login', 'signup', 'register'],
-                        'roles' => ['?'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

@@ -7,9 +7,9 @@ use yii\helpers\Html;
  * @var app\models\PeriodicEvent $model
  */
 
-$this->title = 'Update Periodic Event: ' . $model->id;
+$this->title = 'Update Periodic Event: ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Periodic Events', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="periodic-event-update">

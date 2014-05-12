@@ -4,6 +4,7 @@ Catfeeder Install
 - remove www-data from /etc/at.deny
 - install ngingx
 - install php5 & php5_fpm
+- install bc
 - in /etc/php5/fpm/pool.d/www.conf, comment the line:
   listen = /var/run/php5-fpm.sock
 - in /etc/php5/fpm/pool.d/www.conf, add the line:

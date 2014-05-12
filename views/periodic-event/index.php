@@ -28,10 +28,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            // 'id',
-            //'event_type_id',
-            'eventType.name',
-            'every_day',
+            //'id',
+            'name',
+            'quantity',
+            'hour',
+            'minute',
             'monday',
             'tuesday',
             'wednesday',
@@ -39,8 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'friday',
             'saturday',
             'sunday',
-            'interval_in_sec',
-            'start_date',
+            // 'cron_string',
             // 'created',
 
             ['class' => 'yii\grid\ActionColumn'],

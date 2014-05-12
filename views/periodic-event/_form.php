@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\widgets\DateTimePicker;
 
 /**
  * @var yii\web\View $this
@@ -15,46 +14,35 @@ use kartik\widgets\DateTimePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <!-- <?= $form->field($model, 'event_type_id')->textInput(['maxlength' => 11]) ?> -->
+    <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
 
-    <?php $list = Html::activeDropDownList($model, 'event_type_id', \yii\helpers\ArrayHelper::map(app\models\EventType::find()->all(), 'id', 'name')) ?>
+    <?= $form->field($model, 'quantity')->textInput(['maxlength' => 4]) ?>
 
-    <?= $form->field($model, 'event_type_id')->dropDownList(\yii\helpers\ArrayHelper::map(app\models\EventType::find()->all(), 'id', 'name'))  ?>
+    <?php 
+    $items = array();
+    for ($i=0; $i < 24; $i++)
+      $items[$i] = str_pad($i, 2, "0", STR_PAD_LEFT);
+    echo $form->field($model, 'hour')->dropDownList($items);
     
-    <?= $form->field($model, 'every_day')->checkbox() ?>
-
-    <?= $form->field($model, 'monday')->checkbox() ?>
-
-    <?= $form->field($model, 'tuesday')->checkbox() ?>
-
-    <?= $form->field($model, 'wednesday')->checkbox() ?>
-
-    <?= $form->field($model, 'thursday')->checkbox() ?>
-
-    <?= $form->field($model, 'friday')->checkbox() ?>
-
-    <?= $form->field($model, 'saturday')->checkbox() ?>
-
-    <?= $form->field($model, 'sunday')->checkbox() ?>
-
-    <?= $form->field($model, 'interval_in_sec')->textInput() ?>
-
+    $items = array();
+    for ($i=0; $i < 60; $i++)
+      $items[$i] = str_pad($i, 2, "0", STR_PAD_LEFT);
+    echo $form->field($model, 'minute')->dropDownList($items); 
+    ?>
     
-    <!-- <?= $form->field($model, 'start_date')->textInput() ?> -->
+    <?= $form->field($model, 'monday')->checkBox() ?>
 
-    <?php // http://stackoverflow.com/questions/23092188/how-to-implement-kartik-yii2-fileinput-in-form-which-is-using-different-model ?>
-    <?= $form->field($model, 'start_date')->widget(DateTimePicker::className(),
-        [
-            'name' => 'dp_1',
-            'type' => DateTimePicker::TYPE_INPUT,
-            'value' => '23-Feb-1982 10:10',
-            'pluginOptions' => [
-                'autoclose'=>true,
-                'format' => 'dd-M-yyyy hh:ii'
-            ]
-        ]); ?>
+    <?= $form->field($model, 'tuesday')->checkBox() ?>
 
-    <!-- <?= $form->field($model, 'created')->textInput() ?> -->
+    <?= $form->field($model, 'wednesday')->checkBox() ?>
+
+    <?= $form->field($model, 'thursday')->checkBox() ?>
+
+    <?= $form->field($model, 'friday')->checkBox() ?>
+
+    <?= $form->field($model, 'saturday')->checkBox() ?>
+
+    <?= $form->field($model, 'sunday')->checkBox() ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

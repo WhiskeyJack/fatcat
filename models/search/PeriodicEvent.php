@@ -15,8 +15,9 @@ class PeriodicEvent extends PeriodicEventModel
     public function rules()
     {
         return [
-            [['id', 'event_type_id', 'every_day', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'interval_in_sec'], 'integer'],
-            [['start_date', 'created'], 'safe'],
+            [['id', 'hour', 'minute', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], 'integer'],
+            [['name', 'cron_string', 'created'], 'safe'],
+            [['quantity'], 'number'],
         ];
     }
 
@@ -40,8 +41,9 @@ class PeriodicEvent extends PeriodicEventModel
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'event_type_id' => $this->event_type_id,
-            'every_day' => $this->every_day,
+            'quantity' => $this->quantity,
+            'hour' => $this->hour,
+            'minute' => $this->minute,
             'monday' => $this->monday,
             'tuesday' => $this->tuesday,
             'wednesday' => $this->wednesday,
@@ -49,10 +51,11 @@ class PeriodicEvent extends PeriodicEventModel
             'friday' => $this->friday,
             'saturday' => $this->saturday,
             'sunday' => $this->sunday,
-            'interval_in_sec' => $this->interval_in_sec,
-            'start_date' => $this->start_date,
             'created' => $this->created,
         ]);
+
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'cron_string', $this->cron_string]);
 
         return $dataProvider;
     }

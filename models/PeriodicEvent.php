@@ -8,8 +8,10 @@ use Yii;
  * This is the model class for table "periodic_event".
  *
  * @property string $id
- * @property string $event_type_id
- * @property integer $every_day
+ * @property string $name
+ * @property string $quantity
+ * @property integer $hour
+ * @property integer $minute
  * @property integer $monday
  * @property integer $tuesday
  * @property integer $wednesday
@@ -17,11 +19,8 @@ use Yii;
  * @property integer $friday
  * @property integer $saturday
  * @property integer $sunday
- * @property integer $interval_in_sec
- * @property string $start_date
+ * @property string $cron_string
  * @property string $created
- *
- * @property EventType $eventType
  */
 class PeriodicEvent extends \yii\db\ActiveRecord
 {
@@ -39,9 +38,11 @@ class PeriodicEvent extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['event_type_id', 'every_day', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'interval_in_sec', 'start_date'], 'required'],
-            [['event_type_id', 'every_day', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'interval_in_sec'], 'integer'],
-               [['start_date', 'created'], 'safe']
+            [['name', 'quantity', 'hour', 'minute', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], 'required'],
+            [['quantity'], 'number'],
+            [['hour', 'minute', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], 'integer'],
+            [['created'], 'safe'],
+            [['name', 'cron_string'], 'string', 'max' => 50]
         ];
     }
 
@@ -51,9 +52,11 @@ class PeriodicEvent extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID and primary key',
-            'event_type_id' => 'Event Type ID',
-            'every_day' => 'Every Day',
+            'id' => 'ID',
+            'name' => 'Name',
+            'quantity' => 'Quantity',
+            'hour' => 'Hour',
+            'minute' => 'Minute',
             'monday' => 'Monday',
             'tuesday' => 'Tuesday',
             'wednesday' => 'Wednesday',
@@ -61,24 +64,25 @@ class PeriodicEvent extends \yii\db\ActiveRecord
             'friday' => 'Friday',
             'saturday' => 'Saturday',
             'sunday' => 'Sunday',
-            'interval_in_sec' => 'Interval In Sec',
-            'start_date' => 'Start Date',
+            'cron_string' => 'Cron String',
             'created' => 'Created',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEventType()
-    {
-        return $this->hasOne(EventType::className(), ['id' => 'event_type_id']);
     }
     
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            $this->start_date=date('Y-m-d g:i:s', strtotime($this->start_date));
+            // create cron string
+            $days = array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
+            $min = $this->minute;
+            $hour = $this->hour;
+            $dom = '*';     // day of month (each day)
+            $month = '*';   // month (each month)
+            $dow = '';      // day of week (0 to 6 are Sunday to Saturday)
+            foreach ($days as $key => $day)
+                $dow .= $this->$day == 1 ? $key . ',' : '';
+            $dow = substr($dow, 0, -1); // remove last comma
+            $this->cron_string = "{$min} {$hour} {$dom} {$month} {$dow}";
             return true;
         } else {
             return false;

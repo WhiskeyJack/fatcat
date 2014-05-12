@@ -19,13 +19,17 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'event_type_id') ?>
+    <?= $form->field($model, 'name') ?>
 
-    <?= $form->field($model, 'every_day') ?>
+    <?= $form->field($model, 'quantity') ?>
 
-    <?= $form->field($model, 'monday') ?>
+    <?= $form->field($model, 'hour') ?>
 
-    <?= $form->field($model, 'tuesday') ?>
+    <?= $form->field($model, 'minute') ?>
+
+    <?php // echo $form->field($model, 'monday') ?>
+
+    <?php // echo $form->field($model, 'tuesday') ?>
 
     <?php // echo $form->field($model, 'wednesday') ?>
 
@@ -37,9 +41,7 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'sunday') ?>
 
-    <?php // echo $form->field($model, 'interval_in_sec') ?>
-
-    <?php // echo $form->field($model, 'start_date') ?>
+    <?php // echo $form->field($model, 'cron_string') ?>
 
     <?php // echo $form->field($model, 'created') ?>
 
