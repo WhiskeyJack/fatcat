@@ -198,6 +198,16 @@ CREATE TABLE IF NOT EXISTS `user` (
 INSERT INTO `user` (`id`, `username`, `email`, `timezone`, `password_hash`, `auth_key`, `confirmation_token`, `confirmation_sent_at`, `confirmed_at`, `unconfirmed_email`, `recovery_token`, `recovery_sent_at`, `blocked_at`, `role`, `registered_from`, `logged_in_from`, `logged_in_at`, `created_at`, `updated_at`) VALUES
 (1, 'admin', 'admin@inthere.nl', 'Europe/Amsterdam', '$2y$10$XuKbJOq.2cAHBaOZ/gnDp.rTnUfwFYtCxoqy39U9JU4zfq5nMq2VC', '00YiLYsS4QWyjiNBHzZQlA1bQwbOyCWm', 'AweAEgt64eVoiUwmq1dfmQrBV70lZ7hb', 1398287313, NULL, NULL, NULL, NULL, NULL, NULL, 2130706433, 2130706433, 1399923022, 1398287313, 1399923022);
 
+
+CREATE TABLE IF NOT EXISTS `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `source` varchar(50) NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `message` varchar(500) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 --
 -- Constraints for dumped tables
 --

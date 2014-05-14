@@ -79,13 +79,43 @@ class PeriodicEvent extends \yii\db\ActiveRecord
             $dom = '*';     // day of month (each day)
             $month = '*';   // month (each month)
             $dow = '';      // day of week (0 to 6 are Sunday to Saturday)
-            foreach ($days as $key => $day)
-                $dow .= $this->$day == 1 ? $key . ',' : '';
+            if (count($days) == 7)
+                $dow .= '*,';
+            else 
+            {
+                foreach ($days as $key => $day)
+                    $dow .= $this->$day == 1 ? $key . ',' : '';
+            }
             $dow = substr($dow, 0, -1); // remove last comma
             $this->cron_string = "{$min} {$hour} {$dom} {$month} {$dow}";
             return true;
         } else {
             return false;
         }
+    }
+    
+    public function afterSave($insert)
+    {
+        $this->writeCrontab();
+    }
+    
+    public function eraseCrontab()
+    {
+        exec('crontab -r');
+    }
+    
+    public function writeCrontab()
+    {
+        $all_events = PeriodicEvent::find()->orderBy('id')->all();
+        $feedme = Yii::getAlias('@webroot') . '/../shell/feedme.sh';
+        $crontab = '';
+        foreach ($all_events as $e) 
+        {
+            $crontab .= "{$e->cron_string} {$feedme} -q {$e->quantity} -N '{$e->name}' -e $e->id -p" . PHP_EOL;
+        }
+        file_put_contents('/tmp/crontab.txt', $crontab);
+        exec('crontab /tmp/crontab.txt');
+        
+        
     }
 }

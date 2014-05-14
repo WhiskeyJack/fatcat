@@ -19,6 +19,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'quantity')->textInput(['maxlength' => 4]) ?>
 
     <?php 
+    $p = new app\models\PeriodicEvent();
+    $p->writeCrontab();
     $items = array();
     for ($i=0; $i < 24; $i++)
       $items[$i] = str_pad($i, 2, "0", STR_PAD_LEFT);

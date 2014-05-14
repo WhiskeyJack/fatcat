@@ -4,7 +4,7 @@
 
 PROGRAM_NAME=Feedme
 VERSION=0.1
-CHANGEDATE="May 8, 2014"
+CHANGEDATE="May 14, 2014"
 SCRIPTNAME=`basename $0`
 TTYFOUND=false
 WALLFOUND=true
@@ -41,6 +41,7 @@ usage(){
 	echo "   -s  --silent      no output/broadcast to consoles"
 	echo "   -e  --eventid     related eventid"
 	echo "   -N  --eventname   related event name"
+	echo "   -p  --periodic    event is a periodic event"
         echo "   -d  --debug       show debug output"
         echo "   -r  --reportdb    report result to db (requires eventid)"
         echo "   -n  --no-act      do not actually perform any action"
@@ -55,6 +56,7 @@ debug_param() {
         echo "  silent:     $SILENT"
         echo "  eventid:    $EVENTID"
         echo "  eventname:  $EVENTNAME"
+        echo "  periodic:   $PERIODIC"
         echo "  reportdb:   $REPORTDB"
         echo "  no-act:     $NOACT"
         echo "  debug:      $DEBUG"
@@ -79,7 +81,7 @@ debug_param() {
 #-debug
 # http://stackoverflow.com/questions/2642707/shell-script-argument-parsing?answertab=votes#tab-top
 # TEMP=$(getopt -n $PROGRAM_NAME -o p:P:cCkhnvVS --long domain-password:,pop3-password:,create,cron,kill,help,no-sync-passwords,version,verbose,skip-pop3 -- "$@")
-TEMP=$(getopt -n $PROGRAM_NAME -o q:se:N:rnhd --long quantity:,silent,eventid:,name:reportdb,no-act,help,debug -- "$@") 
+TEMP=$(getopt -n $PROGRAM_NAME -o q:spe:N:rnhd --long quantity:,silent,periodic,eventid:,name:reportdb,no-act,help,debug -- "$@") 
 
 # check if we have at least one argument
 if [ "$#" -lt 1 ]; then 
@@ -99,6 +101,9 @@ while true; do
                 ;;                                    
                 -e|--eventid)                            
                         EVENTID="$2"; shift; shift; continue  
+                ;;                                    
+                -p|--periodic)                            
+                        PERIODIC=true; shift; continue  
                 ;;                                    
                 -N|--name)                            
                         EVENTNAME="$2"; shift; shift; continue  
