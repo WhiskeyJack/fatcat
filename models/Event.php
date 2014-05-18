@@ -83,6 +83,27 @@ class Event extends \yii\db\ActiveRecord
     public function afterSave($insert)
     {
         if ($insert) {
+
+            // create log entry
+            date_default_timezone_set('UTC');
+            $at_ts = strtotime($this->at);
+            $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+            date_default_timezone_set($timezone);
+            $local_time = date('Y-m-d G:i:s', $at_ts);
+                    
+            $log = new Log();
+            $log->log_source_id = 2;    // one-time event
+            $log->log_severity = 1;
+            $log->subject = "Event {$this->id} registered";
+            $log->message = "Event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$local_time} local time ({$this->at} UTC).";
+            $log->save();
+            
+            $log = new Log();
+            $log->log_source_id = 2;    // one-time event
+            $log->subject = "Event {$this->id} NOT scheduled";
+            $log->message = "Event {$this->id} \"{$this->name}\" was NOT scheduled.";
+            $log->log_severity = 3;
+            date_default_timezone_set('UTC');
             $at_time = date('G:i Y-m-d', strtotime($this->at));
             $feedme = Yii::getAlias('@webroot') . '/../shell/feedme.sh ';
             $cmd = "echo \"{$feedme} -q {$this->quantity} -N '{$this->name}' -e $this->id\"";
@@ -94,8 +115,18 @@ class Event extends \yii\db\ActiveRecord
                     $this->event_status_id = 2;
                     $update = array('at_job' => $this->at_job, 'event_status_id' => $this->event_status_id);
                     \Yii::$app->db->createCommand()->update(self::tableName(), $update, ['id'=>$this->id])->execute();
+                    $log->log_severity = 1;
+                    $log->subject = "Event {$this->id} scheduled";
+                    $log->message = "Event {$this->id} \"{$this->name}\" has been scheduled with at job id {$this->at_job}.";
                 }
             }
+            if (empty($this->at_job)) {
+                // something went wrong
+                $log->message .= PHP_EOL . "Command: {$cmd} | at {$at_time}";
+                $log->message .= PHP_EOL . 'Output: ' . implode(PHP_EOL, $output);
+            }
+            $log->save();
+
             return true;
         } else {
             return false;

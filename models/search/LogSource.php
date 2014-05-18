@@ -5,18 +5,18 @@ namespace app\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Log as LogModel;
+use app\models\LogSource as LogSourceModel;
 
 /**
- * Log represents the model behind the search form about `app\models\Log`.
+ * LogSource represents the model behind the search form about `app\models\LogSource`.
  */
-class Log extends LogModel
+class LogSource extends LogSourceModel
 {
     public function rules()
     {
         return [
-            [['id', 'log_severity', 'log_source_id'], 'integer'],
-            [['subject', 'message', 'created'], 'safe'],
+            [['id'], 'integer'],
+            [['name', 'description'], 'safe'],
         ];
     }
 
@@ -28,7 +28,7 @@ class Log extends LogModel
 
     public function search($params)
     {
-        $query = LogModel::find();
+        $query = LogSourceModel::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -40,13 +40,10 @@ class Log extends LogModel
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'log_severity' => $this->log_severity,
-            'log_source_id' => $this->log_source_id,
-            'created' => $this->created,
         ]);
 
-        $query->andFilterWhere(['like', 'subject', $this->subject])
-            ->andFilterWhere(['like', 'message', $this->message]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

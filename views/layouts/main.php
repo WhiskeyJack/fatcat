@@ -52,7 +52,7 @@ AppAsset::register($this);
 //                    ['label' => 'Contact', 'url' => ['/site/contact']],
                     Yii::$app->user->isGuest ? ['label' => ''] : ['label' => 'Periodic Events', 'url' => ['/periodic-event']],
                     Yii::$app->user->isGuest ? ['label' => ''] : ['label' => 'Events', 'url' => ['/event']],
-                    Yii::$app->user->isGuest ? ['label' => ''] : ['label' => 'Event Types', 'url' => ['/event-type']],
+                    Yii::$app->user->isGuest ? ['label' => ''] : ['label' => 'Log', 'url' => ['/log']],
                     Yii::$app->user->isGuest ?
                         ['label' => 'Login', 'url' => ['user/security/login']] :
                         ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',

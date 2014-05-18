@@ -5,14 +5,14 @@ use yii\widgets\DetailView;
 
 /**
  * @var yii\web\View $this
- * @var app\models\Log $model
+ * @var app\models\LogSource $model
  */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Logs', 'url' => ['index']];
+$this->title = $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Log Sources', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="log-view">
+<div class="log-source-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -31,11 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'log_severity',
-            'log_source_id',
-            'subject',
-            'message',
-            'created',
+            'name',
+            'description',
         ],
     ]) ?>
 

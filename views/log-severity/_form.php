@@ -5,24 +5,18 @@ use yii\widgets\ActiveForm;
 
 /**
  * @var yii\web\View $this
- * @var app\models\Log $model
+ * @var app\models\LogSeverity $model
  * @var yii\widgets\ActiveForm $form
  */
 ?>
 
-<div class="log-form">
+<div class="log-severity-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'log_severity')->textInput() ?>
+    <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
 
-    <?= $form->field($model, 'log_source_id')->textInput() ?>
-
-    <?= $form->field($model, 'subject')->textInput(['maxlength' => 100]) ?>
-
-    <?= $form->field($model, 'message')->textInput(['maxlength' => 500]) ?>
-
-    <?= $form->field($model, 'created')->textInput() ?>
+    <?= $form->field($model, 'description')->textInput(['maxlength' => 254]) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

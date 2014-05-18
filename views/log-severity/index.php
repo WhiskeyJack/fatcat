@@ -6,20 +6,20 @@ use yii\grid\GridView;
 /**
  * @var yii\web\View $this
  * @var yii\data\ActiveDataProvider $dataProvider
- * @var app\models\search\Log $searchModel
+ * @var app\models\search\LogSeverity $searchModel
  */
 
-$this->title = 'Logs';
+$this->title = 'Log Severities';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="log-index">
+<div class="log-severity-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Log', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Log Severity', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -28,15 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            // 'id',
-            //'log_severity',
-            'logSeverity.name',
-            //'log_source_id',
-            'logSource.name',
-            'subject',
-            'message',
-            //'created',
-            'created_local',
+            'id',
+            'name',
+            'description',
+
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

@@ -96,6 +96,13 @@ class PeriodicEvent extends \yii\db\ActiveRecord
     
     public function afterSave($insert)
     {
+        // create log entry                    
+        $log = new Log();
+        $log->log_source_id = 1;    // periodic event
+        $log->log_severity = 1;
+        $log->subject = "Periodic event {$this->id} registered";
+        $log->message = "Periodic event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$this->hour}:{$this->minute} local time.";
+        $log->save();
         $this->writeCrontab();
     }
     
