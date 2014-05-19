@@ -79,15 +79,27 @@ class PeriodicEvent extends \yii\db\ActiveRecord
             $dom = '*';     // day of month (each day)
             $month = '*';   // month (each month)
             $dow = '';      // day of week (0 to 6 are Sunday to Saturday)
-            if (count($days) == 7)
-                $dow .= '*,';
-            else 
-            {
-                foreach ($days as $key => $day)
-                    $dow .= $this->$day == 1 ? $key . ',' : '';
+            
+            $day_count = 0;
+            foreach ($days as $key => $day) {
+               if ($this->$day == 1) {
+                    $dow .= $key . ',';
+                    $day_count++;
+                }
             }
+            if (count($day_count) == 7)
+                $dow .= '*,';
             $dow = substr($dow, 0, -1); // remove last comma
-            $this->cron_string = "{$min} {$hour} {$dom} {$month} {$dow}";
+            
+            // take timezone into account
+            // TODO: also for day?
+            $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+            date_default_timezone_set($timezone);
+            $local_time = strtotime("{$this->hour}:{$this->minute}");
+            date_default_timezone_set('UTC');
+            $utc_hour = date('G', $local_time);
+            $utc_minute = date('i', $local_time);
+            $this->cron_string = "{$utc_minute} {$utc_hour} {$dom} {$month} {$dow}";
             return true;
         } else {
             return false;
@@ -100,8 +112,10 @@ class PeriodicEvent extends \yii\db\ActiveRecord
         $log = new Log();
         $log->log_source_id = 1;    // periodic event
         $log->log_severity = 1;
+        $hour = sprintf("%02d", $this->hour);
+        $minute = sprintf("%02d", $this->minute);
         $log->subject = "Periodic event {$this->id} registered";
-        $log->message = "Periodic event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$this->hour}:{$this->minute} local time.";
+        $log->message = "Periodic event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$hour}:{$minute} local time.";
         $log->save();
         $this->writeCrontab();
     }

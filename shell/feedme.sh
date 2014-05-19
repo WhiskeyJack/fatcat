@@ -28,6 +28,7 @@ SILENT=false
 EVENTID=0
 EVENTNAME=""
 REPORTDB=false
+PERIODIC=false
 NOACT=false
 DEBUG=false
 USELOG=true
@@ -204,9 +205,22 @@ MSG="Feeding $EVENTNAME finished at $DATE"
 if [ "$USELOG" = true ]; then
 	 echo "$MSG, eventid=$EVENTID" >> $LOGFILE 
 fi
-if [ "$EVENTID" -gt 0 ]; then
-	SQL='UPDATE `catfeeder`.`event` SET `event_status_id` = '4' WHERE `event`.`id`='
-    	SQL+="$EVENTID;"
-	echo "Running SQL: $SQL" >> $LOGFILE	
-	mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
+if [ "$EVENTID" -gt 0 ] && [ "$PERIODIC" = false ]; then
+    SQL='UPDATE `catfeeder`.`event` SET `event_status_id` = '4' WHERE `event`.`id`='
+    SQL+="$EVENTID;"
+    echo "Running SQL: $SQL" >> $LOGFILE	
+    mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
+        
+    # create log entry
+    SQL='INSERT INTO `catfeeder`.`log` (`log_severity` , `log_source_id` , `subject` , `message`) '
+    SQL+="VALUES ('1', '2', 'One-time event $EVENTID has run', 'One-time event $EVENTID \"$EVENTNAME\" with quantity $QUANTITY has just run.')";
+    echo "Running SQL: $SQL" >> $LOGFILE	
+    mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
+fi
+if [ "$EVENTID" -gt 0 ] && [ "$PERIODIC" = true ]; then    
+    # create log entry
+    SQL='INSERT INTO `catfeeder`.`log` (`log_severity` , `log_source_id` , `subject` , `message`) '
+    SQL+="VALUES ('1', '1', 'Periodic event $EVENTID has run', 'Periodic event $EVENTID \"$EVENTNAME\" with quantity $QUANTITY has just run.')";
+    echo "Running SQL: $SQL" >> $LOGFILE	
+    mysql --user=$DBUSER --password=$DBPASS $DBNAME -e "$SQL"
 fi

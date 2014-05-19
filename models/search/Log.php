@@ -32,6 +32,7 @@ class Log extends LogModel
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['created'=>SORT_DESC]],
         ]);
 
         if (!($this->load($params) && $this->validate())) {
