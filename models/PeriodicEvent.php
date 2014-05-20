@@ -114,9 +114,33 @@ class PeriodicEvent extends \yii\db\ActiveRecord
         $log->log_severity = 1;
         $hour = sprintf("%02d", $this->hour);
         $minute = sprintf("%02d", $this->minute);
-        $log->subject = "Periodic event {$this->id} registered";
-        $log->message = "Periodic event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$hour}:{$minute} local time.";
-        $log->save();
+        $days = $this->dayString();
+        if ($insert) {
+            $log->subject = "Periodic event {$this->id} registered";
+            $log->message = "Periodic event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$hour}:{$minute} local time on {$days}.";
+            $log->save();
+        } 
+        else 
+        {
+            $log->subject = "Periodic event {$this->id} updated";
+            $log->message = "Periodic event {$this->id} \"{$this->name}\" has been updated to run at {$hour}:{$minute} local time with quantity {$this->quantity} on {$days}.";
+            $log->save();
+        }
+        $this->writeCrontab();
+    }
+    
+    public function afterDelete()
+    {
+        // create log entry                    
+        $log = new Log();
+        $log->log_source_id = 1;    // periodic event
+        $log->log_severity = 1;
+        $hour = sprintf("%02d", $this->hour);
+        $minute = sprintf("%02d", $this->minute);
+        $days = $this->dayString();
+        $log->subject = "Periodic event {$this->id} deleted";
+        $log->message = "Periodic event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been deleted. It was registered to run at {$hour}:{$minute} local time on {$days}.";
+        $log->save();        
         $this->writeCrontab();
     }
     
@@ -135,8 +159,26 @@ class PeriodicEvent extends \yii\db\ActiveRecord
             $crontab .= "{$e->cron_string} {$feedme} -q {$e->quantity} -N '{$e->name}' -e $e->id -p" . PHP_EOL;
         }
         file_put_contents('/tmp/crontab.txt', $crontab);
-        exec('crontab /tmp/crontab.txt');
-        
-        
+        exec('crontab /tmp/crontab.txt');        
+    }
+    
+    public function dayString()
+    {
+        $days = array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
+        $run_on = array();
+        $day_count = 0;
+        foreach ($days as $key => $day) {
+            if ($this->$day == 1) {
+                $run_on[] = $day;
+            }
+       }
+       if (count($run_on) == 7)
+           $string = 'all days';
+       else
+       {
+           $last = array_pop($run_on);
+           $string = count($run_on) ? implode(', ', $run_on) . " and {$last}" : $last;
+       }
+       return $string;
     }
 }

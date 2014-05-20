@@ -83,53 +83,14 @@ class Event extends \yii\db\ActiveRecord
     public function afterSave($insert)
     {
         if ($insert) {
-
-            // create log entry
-            date_default_timezone_set('UTC');
-            $at_ts = strtotime($this->at);
-            $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
-            date_default_timezone_set($timezone);
-            $local_time = date('Y-m-d G:i:s', $at_ts);
-                    
-            $log = new Log();
-            $log->log_source_id = 2;    // one-time event
-            $log->log_severity = 1;
-            $log->subject = "Event {$this->id} registered";
-            $log->message = "Event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been registered to run at {$local_time} local time ({$this->at} UTC).";
-            $log->save();
-            
-            $log = new Log();
-            $log->log_source_id = 2;    // one-time event
-            $log->subject = "Event {$this->id} NOT scheduled";
-            $log->message = "Event {$this->id} \"{$this->name}\" was NOT scheduled.";
-            $log->log_severity = 3;
-            date_default_timezone_set('UTC');
-            $at_time = date('G:i Y-m-d', strtotime($this->at));
-            $feedme = Yii::getAlias('@webroot') . '/../shell/feedme.sh ';
-            $cmd = "echo \"{$feedme} -q {$this->quantity} -N '{$this->name}' -e $this->id\"";
-            exec("{$cmd} | at {$at_time} 2>&1", $output);
-            $matches = array();
-            foreach ($output as $input_line) {
-                if (preg_match("/^job (\d*) /", $input_line, $matches)) {
-                    $this->at_job = $matches[1];
-                    $this->event_status_id = 2;
-                    $update = array('at_job' => $this->at_job, 'event_status_id' => $this->event_status_id);
-                    \Yii::$app->db->createCommand()->update(self::tableName(), $update, ['id'=>$this->id])->execute();
-                    $log->log_severity = 1;
-                    $log->subject = "Event {$this->id} scheduled";
-                    $log->message = "Event {$this->id} \"{$this->name}\" has been scheduled with at job id {$this->at_job}.";
-                }
-            }
-            if (empty($this->at_job)) {
-                // something went wrong
-                $log->message .= PHP_EOL . "Command: {$cmd} | at {$at_time}";
-                $log->message .= PHP_EOL . 'Output: ' . implode(PHP_EOL, $output);
-            }
-            $log->save();
-
+            $this->scheduleAtJob();
             return true;
         } else {
-            return false;
+            $previous = \Yii::$app->db->createCommand("SELECT at_job FROM event where id={$this->id}")->queryOne();
+            $p_at_job = $previous['at_job'];
+            exec("atrm {$p_at_job}", $output);
+            $this->scheduleAtJob(TRUE);
+            return true;
         }
     }
     
@@ -140,9 +101,75 @@ class Event extends \yii\db\ActiveRecord
         $created_ts = strtotime($this->created);
         $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
         Yii::$app->timeZone = $timezone;
-        
         $this->at_local = date('l F j g:i A', $at_ts);
         $this->created_local = date('l F j g:i A', $created_ts);
+        $this->created_local = $this->local_time();
         return parent::afterFind();
+    }
+    
+    public function afterDelete() {
+        exec("atrm {$this->at_job}", $output);
+        $log = new Log();
+        $log->log_source_id = 2;    // one-time event
+        $log->log_severity = 1;
+        $local_time = $this->local_time();
+        $log->subject = "Event {$this->id} deleted";
+        $log->message = "Event {$this->id} \"{$this->name}\" with quantity {$this->quantity} registered to run at {$local_time} local time ({$this->at} UTC) has been deleted.";
+        $log->save();
+    }
+    
+    public function local_time($seconds = FALSE) {
+        date_default_timezone_set('UTC');
+        $at_ts = strtotime($this->at);
+        $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+        date_default_timezone_set($timezone);
+        return $seconds ? date('Y-m-d G:i:s', $at_ts) : date('Y-m-d G:i', $at_ts);
+    }
+    
+    public function scheduleAtJob($update = FALSE)
+    {
+        $registered = $update ? 'updated' : 'registered';
+        // create log entry
+        date_default_timezone_set('UTC');
+        $at_ts = strtotime($this->at);
+        $timezone = Yii::$app->user->isGuest ? 'Europe/Amsterdam' : Yii::$app->user->identity->timezone;
+        date_default_timezone_set($timezone);
+        $local_time = date('Y-m-d G:i:s', $at_ts);
+
+        $log = new Log();
+        $log->log_source_id = 2;    // one-time event
+        $log->log_severity = 1;
+        $log->subject = "Event {$this->id} {$registered}";
+        $log->message = "Event {$this->id} \"{$this->name}\" with quantity {$this->quantity} has been {$registered} to run at {$local_time} local time ({$this->at} UTC).";
+        $log->save();
+
+        $log = new Log();
+        $log->log_source_id = 2;    // one-time event
+        $log->subject = "Event {$this->id} NOT scheduled";
+        $log->message = "Event {$this->id} \"{$this->name}\" was NOT scheduled.";
+        $log->log_severity = 3;
+        date_default_timezone_set('UTC');
+        $at_time = date('G:i Y-m-d', strtotime($this->at));
+        $feedme = Yii::getAlias('@webroot') . '/../shell/feedme.sh ';
+        $cmd = "echo \"{$feedme} -q {$this->quantity} -N '{$this->name}' -e $this->id\"";
+        exec("{$cmd} | at {$at_time} 2>&1", $output);
+        $matches = array();
+        foreach ($output as $input_line) {
+            if (preg_match("/^job (\d*) /", $input_line, $matches)) {
+                $this->at_job = $matches[1];
+                $this->event_status_id = 2;
+                $update = array('at_job' => $this->at_job, 'event_status_id' => $this->event_status_id);
+                \Yii::$app->db->createCommand()->update(self::tableName(), $update, ['id'=>$this->id])->execute();
+                $log->log_severity = 1;
+                $log->subject = "Event {$this->id} scheduled";
+                $log->message = "Event {$this->id} \"{$this->name}\" has been scheduled with at job id {$this->at_job}.";
+            }
+        }
+        if (empty($this->at_job)) {
+            // something went wrong
+            $log->message .= PHP_EOL . "Command: {$cmd} | at {$at_time}";
+            $log->message .= PHP_EOL . 'Output: ' . implode(PHP_EOL, $output);
+        }
+        $log->save();
     }
 }
